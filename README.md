@@ -1,2 +1,2 @@
 # mozu-java-samples
-Java sample applications that demonstrate how to build applications that link to Mozu.
+This Git repository contains Mozu Java SDK sample applications that demonstrate how to build applications that link to Mozu.
