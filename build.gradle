@@ -1,13 +1,14 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
-apply plugin: 'war'
+apply plugin:'application'
 
+
+archivesBaseName='mozu-sample'
+
+mainClassName = "com.mozu.sample.SampleRunner"
 sourceCompatibility = 1.7
-
-archivesBaseName='order-sample'
-group='wars'
-httpPort=8002
+group='com.mozu'
 
 // Dynamically insert TeamCity build number if available
 if (hasProperty("teamcity")) {
@@ -19,7 +20,7 @@ if (hasProperty("teamcity")) {
     version = '1.0.0-SNAPSHOT'
 }
 
-war {
+jar {
     manifest {
         attributes 'Implementation-Title': 'Mozu Order Sample', 'Implementation-Version': version
     }
