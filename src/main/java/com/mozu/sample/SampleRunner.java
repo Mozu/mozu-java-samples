@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import com.mozu.sample.appauthenticate.SampleAppAuthenticator;
 import com.mozu.sample.order.GetAllOrdersSample;
 import com.mozu.sample.order.GetOrderSample;
+import com.mozu.sample.payment.EditOrderAfterInitialAuthSample;
+import com.mozu.sample.payment.PaymentReAuthSample;
 
 public class SampleRunner {
     private static final Logger logger = LoggerFactory.getLogger(SampleRunner.class);
@@ -25,7 +27,7 @@ public class SampleRunner {
 
             System.out.print("Enter the tenantId of the application:");
             Integer tenantId = scanner.nextInt();
-
+            
             printSampleMenu();
 
             for (;;) {
@@ -58,6 +60,15 @@ public class SampleRunner {
             GetAllOrdersSample allOrdersSample = new GetAllOrdersSample();
             allOrdersSample.runSample(tenantId, scanner);
             break;
+        case "3":
+            PaymentReAuthSample paymentReAuthSample = new PaymentReAuthSample();
+            paymentReAuthSample.runSample(tenantId, scanner);
+          
+            break;
+        case "4":
+        	EditOrderAfterInitialAuthSample editOrderAfterInitialAuthSample = new EditOrderAfterInitialAuthSample();
+            editOrderAfterInitialAuthSample.runSample(tenantId, scanner);
+            break;
         default:
             System.out.print("Bad command");
 
@@ -67,7 +78,7 @@ public class SampleRunner {
 
     private static void printSampleMenu() {
         String sampleMenu = "1 - Get Order By Order ID\n"
-                + "2 - Get All Orders\n" + "q - quit\n";
+                + "2 - Get All Orders\n" + "3 - Payment with partial capture and re-auth \n"+ "4 - Add additional item to authorized payment \n" + "q - quit\n";
         System.out.print(sampleMenu);
     }
 }
