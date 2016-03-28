@@ -22,7 +22,7 @@ if (hasProperty("teamcity")) {
 
 jar {
     manifest {
-        attributes 'Implementation-Title': 'Mozu Order Sample', 'Implementation-Version': version
+        attributes 'Implementation-Title': 'Mozu Java Samples', 'Implementation-Version': version
     }
 }
 
@@ -31,10 +31,8 @@ task wrapper(type: Wrapper) {
 }
 
 repositories {
+    mavenCentral()
     maven {
-          url "http://aus02bpnexs001.corp.volusion.com:8080/nexus/content/groups/public"
-    }  
-     maven {
         url "https://oss.sonatype.org/content/groups/staging/"
     }
 }
@@ -45,9 +43,7 @@ configurations.all {
 }
 
 dependencies {
-    compile ('com.mozu:mozu-java-security:1.0.2')
-    compile ("com.mozu:mozu-api-java:1.17.0") {
-
+    compile ('com.mozu:mozu-api-java:1.17.0') {
         exclude group: 'mysql'
         exclude group: 'xerces'
         exclude group: 'berkeleydb'
@@ -68,17 +64,5 @@ test {
     systemProperties 'property': 'value'
 }
 
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            repository(url: "http://aus02bpnexs001.corp.volusion.com:8080/nexus/content/repositories/releases/") {
-                authentication(userName: "deployment", password: "deployment123")
-             }
-            snapshotRepository(url: "http://aus02bpnexs001.corp.volusion.com:8080/nexus/content/repositories/snapshots/") {
-                authentication(userName: "deployment", password: "deployment123")
-             }
-       }
-    }
-}
 
 
