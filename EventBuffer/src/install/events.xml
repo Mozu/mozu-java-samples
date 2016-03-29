@@ -1,0 +1,17 @@
+<Events xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://developer.mozu.com/v1">
+  <EventsHandler>
+    <EndPoint>https://<your SSL URL>/EventBufferSample/events</EndPoint>
+    <Event>Application Disabled</Event>
+    <Event>Application Enabled</Event>
+    <Event>Application Installed</Event>
+    <Event>Application Uninstalled</Event>
+    <Event>Application Upgraded</Event>
+  </EventsHandler>
+  <EventsHandler>
+    <EndPoint>https://<your SSL URL>/EventBufferSample/eventbuffer</EndPoint>
+    <Event>Product Code Renamed</Event>
+    <Event>Product Created</Event>
+    <Event>Product Deleted</Event>
+    <Event>Product Updated</Event>
+  </EventsHandler>
+</Events>

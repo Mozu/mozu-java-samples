@@ -1,0 +1,9 @@
+<Core xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://developer.mozu.com/v1">
+  <DevAccountNamespace></DevAccountNamespace>
+  <Name>Event Buffer Sample</Name>
+  <AppId>event_sample</AppId>
+  <Version>1.0.0</Version>
+  <SharedSecret></SharedSecret>
+  <MozuApiVersion>1.18.15197.0</MozuApiVersion>
+  <Description>This is a sample application that demonstrates how to place Mozu Events in a event buffer and process at a later time.</Description>
+</Core>

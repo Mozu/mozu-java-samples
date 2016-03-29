@@ -1,0 +1,8 @@
+<Behaviors xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://developer.mozu.com/v1">
+  <Behavior>Product Read</Behavior>
+  <Behavior>Read installed applications</Behavior>
+  <Behavior>Update installed applications</Behavior>
+  <Behavior>Create EntityList Definition</Behavior>
+  <Behavior>Update EntityList Definition</Behavior>
+  <Behavior>Delete EntityList Definition</Behavior>
+</Behaviors>
