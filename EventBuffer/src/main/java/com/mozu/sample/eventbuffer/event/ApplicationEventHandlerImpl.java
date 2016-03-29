@@ -1,10 +1,5 @@
 package com.mozu.sample.eventbuffer.event;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
@@ -19,8 +14,9 @@ import com.mozu.api.contracts.event.Event;
 import com.mozu.api.events.EventManager;
 import com.mozu.api.events.handlers.ApplicationEventHandler;
 import com.mozu.api.events.model.EventHandlerStatus;
-import com.mozu.sample.eventbuffer.service.DispatchEventService;
+import com.mozu.base.utils.ApplicationUtils;
 import com.mozu.sample.eventbuffer.service.EventBufferService;
+import com.mozu.sample.eventbuffer.service.TimerService;
 
 @Component
 public class ApplicationEventHandlerImpl implements ApplicationEventHandler {
@@ -28,12 +24,10 @@ public class ApplicationEventHandlerImpl implements ApplicationEventHandler {
 
     @Autowired 
     EventBufferService eventBufferService;
-
-    @Autowired 
-    DispatchEventService dispatchBufferService;
-
-    Map <Integer, Timer> timerMap = new HashMap<> ();
     
+    @Autowired
+    TimerService timerService;
+
     @PostConstruct
     public void initialize() {
         EventManager.getInstance().registerHandler(this);
@@ -43,8 +37,8 @@ public class ApplicationEventHandlerImpl implements ApplicationEventHandler {
     @Override
     public EventHandlerStatus disabled(ApiContext apiContext, Event event) {
         try {
-        	delJob(apiContext);
-            logger.debug("Scheduled job for sales import removed");
+            timerService.stopEventPolling(apiContext);
+            logger.info("Scheduled job for sales import removed");
         } catch (Exception e) {
         	logger.info("Exception disabling sales import job: " + e.getMessage());
         }
@@ -55,19 +49,24 @@ public class ApplicationEventHandlerImpl implements ApplicationEventHandler {
     @Override
     public EventHandlerStatus enabled(ApiContext apiContext, Event event) {
         EventHandlerStatus status = new EventHandlerStatus(HttpStatus.SC_OK);
-
-         this.startEventPolling(apiContext);
-            
+        timerService.startEventPolling(apiContext);
+    
         return status;
     }
 
     @Override
     public EventHandlerStatus installed(ApiContext apiContext, Event event) {
-        logger.debug("Application installed event");
+        logger.info("Application installed event");
         EventHandlerStatus status;
+        
         try {
-            eventBufferService.installSchema(apiContext.getTenantId());
+            // enable the application
+            ApplicationUtils.setApplicationToInitialized(apiContext);
+            logger.info ("Application Initialized for tenant" + apiContext.getTenantId());
             
+            // install the event buffer schema
+            eventBufferService.installSchema(apiContext.getTenantId());
+            logger.info ("Event Log schema installed for tenant id: " + apiContext.getTenantId());
             status = new EventHandlerStatus(HttpStatus.SC_OK);
         } catch (Exception e) {
             logger.error("Exception during installation: " + e.getMessage());
@@ -80,10 +79,10 @@ public class ApplicationEventHandlerImpl implements ApplicationEventHandler {
     public EventHandlerStatus uninstalled(ApiContext apiContext, Event event) {
         try {
             eventBufferService.deleteSchema(apiContext.getTenantId());
-            // product is uninstalld? delete the QRTZ job 
+            // product is uninstalled delete the Timer job 
             try {
-            	delJob(apiContext);
-                logger.debug("Scheduled job for sales import removed");
+            	timerService.stopEventPolling(apiContext);
+                logger.info("Scheduled job for sales import removed");
             } catch (Exception e) {
             	logger.info("Exception disabling sales import job: " + e.getMessage());
             }
@@ -96,10 +95,11 @@ public class ApplicationEventHandlerImpl implements ApplicationEventHandler {
 
     @Override
     public EventHandlerStatus upgraded(ApiContext apiContext, Event event) {
-        logger.debug("Application upgraded event");
+        logger.info("Application upgraded event");
         EventHandlerStatus status =new EventHandlerStatus(HttpStatus.SC_OK);
         try {
             eventBufferService.installSchema(apiContext.getTenantId());
+            logger.info ("Event Log schema updated for tenant id: " + apiContext.getTenantId());
         } catch (Exception e) {
             logger.error("Exception during applicaiton upgrade: " + e.getMessage());
             status = new EventHandlerStatus(e.getMessage(), HttpStatus.SC_INTERNAL_SERVER_ERROR);
@@ -110,20 +110,7 @@ public class ApplicationEventHandlerImpl implements ApplicationEventHandler {
     @PreDestroy
     public void cleanup() {
         EventManager.getInstance().unregisterHandler(this.getClass());
-        logger.debug("Application event handler unregistered");
+        logger.info("Application event handler unregistered");
     }
     
-    protected void startEventPolling (ApiContext apiContext) {
-        TimerTask eventTimerTask = new EventTimerTask(apiContext, eventBufferService, dispatchBufferService);
-        Timer timer = new Timer(true);
-        // run job every 30 seconds.
-        timer.scheduleAtFixedRate(eventTimerTask, 0, 30 * 1000);
-        timerMap.put(apiContext.getTenantId(), timer);
-    }
-    
-    protected void delJob (ApiContext apiContext) {
-        Timer timer = timerMap.get(apiContext.getTenantId());
-        timer.cancel();
-        timerMap.remove(apiContext.getTenantId());
-    }
 }

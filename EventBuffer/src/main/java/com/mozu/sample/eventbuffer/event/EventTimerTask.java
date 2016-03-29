@@ -25,9 +25,9 @@ public class EventTimerTask extends TimerTask {
     
     @Override
     public void run() {
-        logger.info("Start Event Queue Polling:" + new Date());
+        logger.info("Start Event Log Processing:" + new Date());
         eventService.dispatchPendingEvents(apiContext);
-        logger.info("Start Event Queue Polling:" + new Date());
+        logger.info("End Event Log Processing:" + new Date());
     }
 
 }

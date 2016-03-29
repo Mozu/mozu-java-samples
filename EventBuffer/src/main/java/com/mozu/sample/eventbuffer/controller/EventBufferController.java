@@ -21,6 +21,7 @@ import com.mozu.api.security.Crypto;
 import com.mozu.api.utils.JsonUtils;
 import com.mozu.sample.eventbuffer.model.MozuEvent;
 import com.mozu.sample.eventbuffer.service.EventBufferService;
+import com.mozu.sample.eventbuffer.service.TimerService;
 
 @Controller
 public class EventBufferController {
@@ -29,6 +30,9 @@ public class EventBufferController {
 
     @Autowired
     EventBufferService eventBufferService;
+    
+    @Autowired
+    TimerService timerService;
     
     /**
      * Event handler top level controller. This sample controller uses 
@@ -51,7 +55,7 @@ public class EventBufferController {
         // get the event from the request and validate
         try {
             String body = IOUtils.toString(httpRequest.getInputStream());
-            logger.debug("Event body: " + body);
+            logger.info("Event body: " + body);
             event = mapper.readValue(body, MozuEvent.class);
             if (!Crypto.isRequestValid(apiContext, body)) {
                 StringBuilder msg = new StringBuilder ("Event is not authorized.");
@@ -67,6 +71,12 @@ public class EventBufferController {
         try {
             logger.info("Adding to Event Queue.  Site ID: " + apiContext.getSiteId() + " Correlation ID: " + event.getCorrelationId());
              eventBufferService.addEvent(apiContext, event);
+             
+             // check to make sure the event polling timer is running - Note if we were using Quartz scheduler it would have started when the servlet stared.
+             // assuming since we received an event, the application is enabled.
+             if (!timerService.isEventTimerPolling (apiContext)) {
+                 timerService.startEventPolling(apiContext);
+             }
         } catch (Exception e) {
             if (e.getMessage() != null) {
                 return new ResponseEntity<String>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

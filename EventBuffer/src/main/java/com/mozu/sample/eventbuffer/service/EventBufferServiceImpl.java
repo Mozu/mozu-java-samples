@@ -42,7 +42,7 @@ import com.mozu.sample.eventbuffer.model.MozuEvent;
  */
 @Service
 public class EventBufferServiceImpl implements EventBufferService {
-    private static final String EVENT_BUFFER_LIST = "lightspeedEventBuffer";
+    private static final String EVENT_BUFFER_LIST = "event-sample-event-log";
     private static final Logger logger = LoggerFactory.getLogger(EventBufferServiceImpl.class);
 
     @Autowired
@@ -76,7 +76,7 @@ public class EventBufferServiceImpl implements EventBufferService {
         indexedProperties.add(entityIdProperty);
         indexedProperties.add(eventCategory);
 
-        entitySchemaHandler.installSchema(new MozuApiContext(tenantId), entityList, EntityScope.Site, idProperty, indexedProperties);
+        entitySchemaHandler.installSchema(new MozuApiContext(tenantId), entityList, EntityScope.Tenant, idProperty, indexedProperties);
     }
 
     /* (non-Javadoc)

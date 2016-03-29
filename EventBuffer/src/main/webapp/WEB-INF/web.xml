@@ -22,7 +22,7 @@
 
 	<!-- Processes application requests -->
 	<servlet>
-		<servlet-name>LightspeedCloudServlet</servlet-name>
+		<servlet-name>EventBufferSample</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 		<init-param>
 			<param-name>contextConfigLocation</param-name>
